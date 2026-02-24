@@ -15,7 +15,7 @@ const queryClient = new QueryClient();
 const Tab = createBottomTabNavigator();
 
 const TAB_BAR_HEIGHT = 60;
-const EXTRA_BOTTOM = 24;
+const EXTRA_BOTTOM = 48;
 
 function HomeScreen() {
   const insets = useSafeAreaInsets();
