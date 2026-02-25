@@ -1,12 +1,17 @@
 import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMarketStore } from '../store/marketStore';
 
+const TAB_BAR_HEIGHT = 60;
+
 export default function HistoryScreen() {
+  const insets = useSafeAreaInsets();
   const { alertHistory } = useMarketStore();
+  const bottomPadding = insets.bottom + TAB_BAR_HEIGHT + 24;
 
   if (alertHistory.length === 0) {
     return (
-      <View style={styles.empty}>
+      <View style={[styles.empty, { paddingBottom: bottomPadding }]}>
         <Text style={styles.emptyIcon}>🔔</Text>
         <Text style={styles.emptyText}>No alerts fired yet</Text>
         <Text style={styles.emptySub}>Set a target price and we'll log it here</Text>
@@ -17,6 +22,7 @@ export default function HistoryScreen() {
   return (
     <FlatList
       style={styles.container}
+      contentContainerStyle={{ paddingBottom: bottomPadding }}
       data={alertHistory}
       keyExtractor={(_, i) => String(i)}
       renderItem={({ item }) => (

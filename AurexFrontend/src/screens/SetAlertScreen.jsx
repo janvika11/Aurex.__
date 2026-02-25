@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity,
          StyleSheet, ScrollView, Alert } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMarketStore } from '../store/marketStore';
 
+const TAB_BAR_HEIGHT = 60;
+
 export default function SetAlertScreen() {
+  const insets = useSafeAreaInsets();
   const { forex, gold,
           forexAlert, setForexAlert, clearForexAlert,
           goldAlert,  setGoldAlert,  clearGoldAlert } = useMarketStore();
@@ -33,8 +37,14 @@ export default function SetAlertScreen() {
     setGoldTarget('');
   }
 
+  const bottomPadding = insets.bottom + TAB_BAR_HEIGHT + 24;
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: bottomPadding }}
+      keyboardShouldPersistTaps="handled"
+    >
 
       <Text style={styles.section}>📈 USD / INR ALERT</Text>
       <Text style={styles.current}>

@@ -2,13 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useMarketStore } from '../store/marketStore';
 import { sendAlert } from '../utils/notifications';
-
-const BASE = 'http://192.168.1.110:5000/api'; // ← CHANGE THIS (see below)
+import { API_BASE } from '../config';
 
 async function fetchMarketData() {
   const [f, g] = await Promise.all([
-    axios.get(`${BASE}/forex`),
-    axios.get(`${BASE}/gold`),
+    axios.get(`${API_BASE}/forex`),
+    axios.get(`${API_BASE}/gold`),
   ]);
   return {
     forex: f.data.rate,
