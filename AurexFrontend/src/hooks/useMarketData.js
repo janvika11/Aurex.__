@@ -61,6 +61,7 @@ export function useMarketData() {
     },
     refetchInterval: 60000,
     refetchIntervalInBackground: true,
-    retry: 2,
+    retry: 5,
+    retryDelay: (attemptIndex) => Math.min(2000 * 2 ** attemptIndex, 10000),
   });
 }

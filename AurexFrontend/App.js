@@ -10,18 +10,21 @@ import SetAlertScreen from './src/screens/SetAlertScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
 import { useMarketData } from './src/hooks/useMarketData';
 import { registerForNotifications } from './src/utils/notifications';
+import { API_BASE } from './src/config';
 
 const queryClient = new QueryClient();
 const Tab = createBottomTabNavigator();
 
 function HomeScreen() {
-  const { isLoading, refetch, dataUpdatedAt } = useMarketData();
+  const { isLoading, isError, error, refetch, dataUpdatedAt } = useMarketData();
 
   useEffect(() => { registerForNotifications(); }, []);
 
   const lastUpdated = dataUpdatedAt
     ? new Date(dataUpdatedAt).toLocaleTimeString('en-IN')
-    : 'Fetching...';
+    : (isError ? null : 'Fetching...');
+
+  const errorMessage = isError && error ? (error.message || String(error)) : null;
 
   return (
     <ScrollView
@@ -37,8 +40,21 @@ function HomeScreen() {
     >
       <Text style={styles.header}>AUREX</Text>
       <Text style={styles.tagline}>Gold & Forex Alerts</Text>
-      <Text style={styles.updated}>Last updated: {lastUpdated}</Text>
-      <Text style={styles.sub}>Pull down to refresh · Auto-updates every 60s</Text>
+      {lastUpdated !== null && (
+        <Text style={styles.updated}>Last updated: {lastUpdated}</Text>
+      )}
+      {errorMessage ? (
+        <>
+          <Text style={styles.errorTitle}>Could not load prices</Text>
+          <Text style={styles.errorText}>{errorMessage}</Text>
+          <Text style={styles.errorHint}>
+            Trying: {API_BASE.replace('/api', '')}. Backend running? Same Wi‑Fi? Set app.json extra.apiUrl to your machine IP. Android emulator: http://10.0.2.2:5000
+          </Text>
+          <Text style={styles.retryHint}>Pull down to retry</Text>
+        </>
+      ) : (
+        <Text style={styles.sub}>Pull down to refresh · Auto-updates every 60s</Text>
+      )}
       <ForexCard />
       <GoldCard />
     </ScrollView>
@@ -89,11 +105,15 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0a0a0f', padding: 20 },
-  header:    { color: '#d4a017', fontSize: 32, fontWeight: 'bold',
-               letterSpacing: 6, marginTop: 20, marginBottom: 2 },
-  tagline:   { color: '#d4a017', fontSize: 11, letterSpacing: 4,
-               opacity: 0.7, marginBottom: 8 },
-  updated:   { color: '#5a5a7a', fontSize: 11, letterSpacing: 1, marginBottom: 2 },
-  sub:       { color: '#5a5a7a', fontSize: 10, letterSpacing: 1, marginBottom: 24 },
+  container:   { flex: 1, backgroundColor: '#0a0a0f', padding: 20 },
+  header:      { color: '#d4a017', fontSize: 32, fontWeight: 'bold',
+                 letterSpacing: 6, marginTop: 20, marginBottom: 2 },
+  tagline:     { color: '#d4a017', fontSize: 11, letterSpacing: 4,
+                 opacity: 0.7, marginBottom: 8 },
+  updated:     { color: '#5a5a7a', fontSize: 11, letterSpacing: 1, marginBottom: 2 },
+  sub:         { color: '#5a5a7a', fontSize: 10, letterSpacing: 1, marginBottom: 24 },
+  errorTitle:  { color: '#ff6b6b', fontSize: 14, fontWeight: 'bold', marginBottom: 6 },
+  errorText:   { color: '#5a5a7a', fontSize: 12, marginBottom: 8 },
+  errorHint:   { color: '#5a5a7a', fontSize: 11, marginBottom: 6 },
+  retryHint:   { color: '#d4a017', fontSize: 11, marginBottom: 24 },
 });

@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 const API_HOST =
   Constants.expoConfig?.extra?.apiUrl ||
   process.env.EXPO_PUBLIC_API_URL ||
-  'http://192.168.1.120:5000'; // ipaddress
+  'http://192.168.1.118:5000'; // your Wi‑Fi IP (from ipconfig)
 
 export const API_BASE = `${API_HOST.replace(/\/$/, '')}/api`;
 
