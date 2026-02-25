@@ -21,7 +21,8 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.AurexFrontend"
+      "package": "com.anonymous.AurexFrontend",
+      "usesCleartextTraffic": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -29,7 +30,8 @@
     "extra": {
       "eas": {
         "projectId": "9c2b14c1-47b0-487d-b6ce-4b47feeb65cb"
-      }
+      },
+      "apiUrl": "https://aurex-052u.onrender.com"
     }
   }
 }

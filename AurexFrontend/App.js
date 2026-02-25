@@ -9,6 +9,7 @@ import GoldCard from './src/components/GoldCard';
 import SetAlertScreen from './src/screens/SetAlertScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
 import { useMarketData } from './src/hooks/useMarketData';
+import { useMarketStore } from './src/store/marketStore';
 import { registerForNotifications } from './src/utils/notifications';
 import { API_BASE } from './src/config';
 
@@ -16,6 +17,7 @@ const queryClient = new QueryClient();
 const Tab = createBottomTabNavigator();
 
 function HomeScreen() {
+  const { forex, gold } = useMarketStore();
   const { isLoading, isError, error, refetch, dataUpdatedAt } = useMarketData();
 
   useEffect(() => { registerForNotifications(); }, []);
@@ -25,6 +27,10 @@ function HomeScreen() {
     : (isError ? null : 'Fetching...');
 
   const errorMessage = isError && error ? (error.message || String(error)) : null;
+
+  const ratesLine = (forex != null || gold != null)
+    ? `USD/INR ₹${forex != null ? forex.toFixed(4) : '—'}  ·  Gold ₹${gold != null ? Math.round(gold).toLocaleString('en-IN') : '—'}/g`
+    : null;
 
   return (
     <ScrollView
@@ -40,6 +46,9 @@ function HomeScreen() {
     >
       <Text style={styles.header}>AUREX</Text>
       <Text style={styles.tagline}>Gold & Forex Alerts</Text>
+      {ratesLine != null && (
+        <Text style={styles.rates}>{ratesLine}</Text>
+      )}
       {lastUpdated !== null && (
         <Text style={styles.updated}>Last updated: {lastUpdated}</Text>
       )}
@@ -48,9 +57,9 @@ function HomeScreen() {
           <Text style={styles.errorTitle}>Could not load prices</Text>
           <Text style={styles.errorText}>{errorMessage}</Text>
           <Text style={styles.errorHint}>
-            Trying: {API_BASE.replace('/api', '')}. Backend running? Same Wi‑Fi? Set app.json extra.apiUrl to your machine IP. Android emulator: http://10.0.2.2:5000
+            Trying: {API_BASE.replace('/api', '')}. If using Render, first load can take up to 60s (server waking). Check phone Wi‑Fi or mobile data.
           </Text>
-          <Text style={styles.retryHint}>Pull down to retry</Text>
+          <Text style={styles.retryHint}>Pull down to retry (we wait up to 60s)</Text>
         </>
       ) : (
         <Text style={styles.sub}>Pull down to refresh · Auto-updates every 60s</Text>
@@ -110,6 +119,7 @@ const styles = StyleSheet.create({
                  letterSpacing: 6, marginTop: 20, marginBottom: 2 },
   tagline:     { color: '#d4a017', fontSize: 11, letterSpacing: 4,
                  opacity: 0.7, marginBottom: 8 },
+  rates:       { color: '#d4a017', fontSize: 14, fontWeight: '600', letterSpacing: 1, marginBottom: 6 },
   updated:     { color: '#5a5a7a', fontSize: 11, letterSpacing: 1, marginBottom: 2 },
   sub:         { color: '#5a5a7a', fontSize: 10, letterSpacing: 1, marginBottom: 24 },
   errorTitle:  { color: '#ff6b6b', fontSize: 14, fontWeight: 'bold', marginBottom: 6 },

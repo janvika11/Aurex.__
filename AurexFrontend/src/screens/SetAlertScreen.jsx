@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity,
          StyleSheet, ScrollView, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMarketStore } from '../store/marketStore';
+import { triggerAlarm } from '../utils/notifications';
 
 const TAB_BAR_HEIGHT = 60;
 
@@ -65,16 +66,16 @@ export default function SetAlertScreen() {
       </View>
 
       <TextInput style={styles.input}
-        placeholder="Target rate  e.g. 91.00"
+        placeholder="Target rate  e.g. 91.25"
         placeholderTextColor="#5a5a7a"
-        keyboardType="numeric"
+        keyboardType="decimal-pad"
         value={forexTarget}
         onChangeText={setForexTarget} />
 
       {forexAlert.active && (
         <View style={styles.activeBadge}>
           <Text style={styles.activeText}>
-            ✓ Active: {forexAlert.direction} ₹{forexAlert.target}
+            ✓ Active: {forexAlert.direction} ₹{Number(forexAlert.target) % 1 !== 0 ? Number(forexAlert.target).toFixed(4) : forexAlert.target}
           </Text>
           <TouchableOpacity onPress={clearForexAlert}>
             <Text style={styles.cancelText}>Cancel</Text>
@@ -107,16 +108,16 @@ export default function SetAlertScreen() {
       </View>
 
       <TextInput style={styles.input}
-        placeholder="Target price  e.g. 15500"
+        placeholder="Target price  e.g. 15500 or 6550.50"
         placeholderTextColor="#5a5a7a"
-        keyboardType="numeric"
+        keyboardType="decimal-pad"
         value={goldTarget}
         onChangeText={setGoldTarget} />
 
       {goldAlert.active && (
         <View style={styles.activeBadge}>
           <Text style={styles.activeText}>
-            ✓ Active: {goldAlert.direction} ₹{goldAlert.target}/g
+            ✓ Active: {goldAlert.direction} ₹{Number(goldAlert.target) % 1 !== 0 ? Number(goldAlert.target).toFixed(2) : goldAlert.target}/g
           </Text>
           <TouchableOpacity onPress={clearGoldAlert}>
             <Text style={styles.cancelText}>Cancel</Text>
@@ -126,6 +127,11 @@ export default function SetAlertScreen() {
 
       <TouchableOpacity style={styles.btn} onPress={saveGoldAlert}>
         <Text style={styles.btnText}>SET GOLD ALERT</Text>
+      </TouchableOpacity>
+
+      <View style={styles.divider} />
+      <TouchableOpacity style={styles.testBtn} onPress={() => triggerAlarm('🔔 Test alarm', 'If you heard a beep and felt vibration, alerts will work when price hits your target.')}>
+        <Text style={styles.testBtnText}>TEST BEEP & VIBRATION</Text>
       </TouchableOpacity>
 
     </ScrollView>
@@ -157,4 +163,7 @@ const styles = StyleSheet.create({
                   padding: 16, alignItems: 'center', marginBottom: 8 },
   btnText:      { color: '#0a0a0f', fontWeight: 'bold', letterSpacing: 3, fontSize: 12 },
   divider:      { height: 1, backgroundColor: '#1e1e2e', marginVertical: 24 },
+  testBtn:      { borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 8,
+                  borderWidth: 1, borderColor: '#5a5a7a', backgroundColor: 'transparent' },
+  testBtnText:  { color: '#5a5a7a', fontSize: 11, letterSpacing: 2 },
 });
